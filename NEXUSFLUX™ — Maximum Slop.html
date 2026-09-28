@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NEXUSFLUX™ — The Future of Everything, Reimagined</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --c1:#ff00c8; --c2:#7a00ff; --c3:#00e5ff; --c4:#00ff9d; --c5:#ffb300; --c6:#ff3d00;
+  --glass:rgba(255,255,255,.07);
+  --glass-b:rgba(255,255,255,.18);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Space Grotesk',system-ui,sans-serif;
+  background:#05000f;color:#fff;overflow-x:hidden;
+  min-height:100vh;
+}
+/* ---------- animated mesh background ---------- */
+.bg{position:fixed;inset:0;z-index:-3;overflow:hidden;background:#05000f}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.75;mix-blend-mode:screen;animation:float 18s ease-in-out infinite}
+.b1{width:60vmax;height:60vmax;background:radial-gradient(circle,var(--c1),transparent 65%);top:-20%;left:-15%}
+.b2{width:55vmax;height:55vmax;background:radial-gradient(circle,var(--c2),transparent 65%);top:10%;right:-20%;animation-delay:-4s;animation-duration:22s}
+.b3{width:50vmax;height:50vmax;background:radial-gradient(circle,var(--c3),transparent 65%);bottom:-25%;left:10%;animation-delay:-8s;animation-duration:26s}
+.b4{width:40vmax;height:40vmax;background:radial-gradient(circle,var(--c4),transparent 65%);bottom:5%;right:5%;animation-delay:-12s;animation-duration:20s;opacity:.5}
+.b5{width:35vmax;height:35vmax;background:radial-gradient(circle,var(--c5),transparent 65%);top:40%;left:35%;animation-delay:-6s;animation-duration:30s;opacity:.4}
+@keyframes float{
+  0%,100%{transform:translate(0,0) scale(1) rotate(0)}
+  25%{transform:translate(8vw,-6vh) scale(1.15) rotate(45deg)}
+  50%{transform:translate(-6vw,10vh) scale(.9) rotate(120deg)}
+  75%{transform:translate(4vw,5vh) scale(1.2) rotate(200deg)}
+}
+.grid{
+  position:fixed;inset:0;z-index:-2;opacity:.25;
+  background-image:linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse at center,#000 20%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 20%,transparent 75%);
+  animation:gridmove 20s linear infinite;
+}
+@keyframes gridmove{to{background-position:60px 60px}}
+.noise{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.14;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+#cursor-glow{
+  position:fixed;width:500px;height:500px;border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(circle,rgba(255,255,255,.18),transparent 60%);
+  transform:translate(-50%,-50%);filter:blur(30px);mix-blend-mode:overlay;transition:opacity .3s;
+}
+canvas#sparkles{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ---------- gradient text ---------- */
+.gt{
+  background:linear-gradient(90deg,var(--c1),var(--c5),var(--c4),var(--c3),var(--c2),var(--c1));
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  animation:shift 6s linear infinite;
+  filter:drop-shadow(0 0 25px rgba(255,0,200,.5));
+}
+@keyframes shift{to{background-position:300% 0}}
+
+/* ---------- glass ---------- */
+.glass{
+  background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.03));
+  backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+  border:1px solid var(--glass-b);
+  box-shadow:0 8px 40px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(255,255,255,.05),0 0 80px rgba(122,0,255,.15);
+}
+
+/* ---------- nav ---------- */
+nav{
+  position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:100;
+  display:flex;align-items:center;gap:8px;padding:10px 12px 10px 22px;border-radius:999px;
+  width:min(940px,calc(100% - 24px));justify-content:space-between;
+}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.logo i{width:22px;height:22px;border-radius:7px;background:conic-gradient(from 0deg,var(--c1),var(--c5),var(--c4),var(--c3),var(--c2),var(--c1));animation:spin 4s linear infinite;box-shadow:0 0 20px var(--c1)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.links{display:flex;gap:4px}
+.links a{color:rgba(255,255,255,.75);text-decoration:none;font-size:.85rem;padding:8px 14px;border-radius:999px;transition:.3s}
+.links a:hover{background:rgba(255,255,255,.14);color:#fff;text-shadow:0 0 12px #fff}
+@media(max-width:700px){.links{display:none}}
+
+/* ---------- buttons ---------- */
+.btn{
+  position:relative;display:inline-flex;align-items:center;gap:10px;cursor:pointer;border:none;color:#fff;
+  font:600 1rem 'Space Grotesk',sans-serif;padding:16px 32px;border-radius:999px;overflow:hidden;isolation:isolate;
+  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c1));background-size:300% 100%;
+  animation:shift 5s linear infinite;
+  box-shadow:0 0 0 1px rgba(255,255,255,.3) inset,0 10px 40px rgba(255,0,200,.5),0 0 80px rgba(0,229,255,.35);
+  transition:transform .3s,box-shadow .3s;
+}
+.btn::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.7) 50%,transparent 70%);
+  transform:translateX(-120%);transition:transform .8s;
+}
+.btn:hover{transform:translateY(-4px) scale(1.06);box-shadow:0 0 0 1px rgba(255,255,255,.5) inset,0 20px 60px rgba(255,0,200,.7),0 0 120px rgba(0,229,255,.6)}
+.btn:hover::before{transform:translateX(120%)}
+.btn.ghost{background:var(--glass);animation:none;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 0 0 1px var(--glass-b) inset,0 10px 30px rgba(0,0,0,.3)}
+.btn.sm{padding:10px 20px;font-size:.85rem}
+
+/* ---------- hero ---------- */
+section{position:relative;padding:110px 24px}
+.wrap{max-width:1180px;margin:0 auto}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding-top:140px;position:relative}
+.pill{
+  display:inline-flex;align-items:center;gap:10px;padding:8px 18px 8px 10px;border-radius:999px;font-size:.82rem;margin-bottom:34px;
+}
+.pill b{background:linear-gradient(90deg,var(--c1),var(--c2));padding:4px 10px;border-radius:999px;font-size:.7rem;letter-spacing:.08em;box-shadow:0 0 20px var(--c1)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--c4);box-shadow:0 0 12px var(--c4),0 0 30px var(--c4);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{transform:scale(1.8);opacity:.4}}
+h1{
+  font-family:'Syne',sans-serif;font-weight:800;line-height:.95;letter-spacing:-.045em;
+  font-size:clamp(3rem,10.5vw,9rem);margin-bottom:30px;
+}
+h1 .l2{display:block;font-size:.55em;letter-spacing:-.03em;margin-top:10px;color:rgba(255,255,255,.92);text-shadow:0 0 60px rgba(122,0,255,.9),0 0 120px rgba(255,0,200,.6)}
+.sub{max-width:700px;margin:0 auto 44px;font-size:clamp(1rem,2vw,1.35rem);line-height:1.6;color:rgba(255,255,255,.72);font-weight:300}
+.sub em{font-style:normal;color:#fff;text-shadow:0 0 18px var(--c3)}
+.cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+/* floating orbs / 3d shapes */
+.shape{position:absolute;pointer-events:none;animation:bob 8s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-40px) rotate(15deg)}}
+.orb{
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 25%,#fff 0%,rgba(255,255,255,.4) 8%,var(--a) 30%,var(--b) 70%,transparent 72%);
+  box-shadow:inset -20px -20px 60px rgba(0,0,0,.4),0 0 80px var(--a),0 0 160px var(--b);
+  filter:blur(1px);
+}
+.o1{--a:var(--c1);--b:var(--c2);width:190px;height:190px;left:6%;top:24%}
+.o2{--a:var(--c3);--b:var(--c4);width:120px;height:120px;right:9%;top:20%;animation-delay:-2s}
+.o3{--a:var(--c5);--b:var(--c6);width:90px;height:90px;left:14%;bottom:12%;animation-delay:-4s}
+.o4{--a:var(--c2);--b:var(--c3);width:150px;height:150px;right:12%;bottom:10%;animation-delay:-6s}
+.ring{
+  width:260px;height:260px;border-radius:50%;border:2px solid transparent;left:50%;top:6%;
+  background:linear-gradient(#05000f,#05000f) padding-box,conic-gradient(var(--c1),var(--c5),var(--c4),var(--c3),var(--c2),var(--c1)) border-box;
+  box-shadow:0 0 60px rgba(255,0,200,.5),inset 0 0 60px rgba(0,229,255,.3);opacity:.6;animation:spin 14s linear infinite;
+}
+@media(max-width:800px){.o1,.o2,.o3,.o4,.ring{opacity:.35}.o1{width:110px;height:110px}.o4{width:90px;height:90px}}
+
+/* marquee */
+.marquee{overflow:hidden;padding:26px 0;border-block:1px solid var(--glass-b);background:linear-gradient(90deg,rgba(255,0,200,.1),rgba(0,229,255,.1),rgba(122,0,255,.1));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.track{display:flex;gap:70px;width:max-content;animation:scroll 28s linear infinite;font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;white-space:nowrap}
+.track span{display:flex;align-items:center;gap:70px;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.55)}
+.track span::after{content:"✦";color:var(--c1);-webkit-text-stroke:0;text-shadow:0 0 20px var(--c1);animation:spin 4s linear infinite}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* section heads */
+.eyebrow{font-size:.8rem;letter-spacing:.3em;text-transform:uppercase;color:var(--c3);text-shadow:0 0 14px var(--c3);margin-bottom:18px;display:block;text-align:center}
+h2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.2rem,6vw,4.6rem);letter-spacing:-.035em;line-height:1;text-align:center;margin-bottom:20px}
+.lead{max-width:620px;margin:0 auto 70px;text-align:center;color:rgba(255,255,255,.65);font-size:1.1rem;line-height:1.65;font-weight:300}
+
+/* bento cards */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:20px}
+.card{
+  position:relative;border-radius:32px;padding:34px;overflow:hidden;transition:transform .5s cubic-bezier(.2,.8,.2,1);
+  transform-style:preserve-3d;
+}
+.card::before{ /* animated gradient border */
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;
+  background:conic-gradient(from var(--ang,0deg),transparent 0 60%,var(--gc,var(--c1)) 80%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  animation:ang 5s linear infinite;
+}
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes ang{to{--ang:360deg}}
+.card::after{ /* spotlight */
+  content:"";position:absolute;width:340px;height:340px;border-radius:50%;left:var(--mx,50%);top:var(--my,50%);
+  transform:translate(-50%,-50%);background:radial-gradient(circle,var(--gc,var(--c1)) 0%,transparent 65%);
+  opacity:0;filter:blur(30px);transition:opacity .4s;pointer-events:none;mix-blend-mode:screen;
+}
+.card:hover::after{opacity:.35}
+.card:hover{transform:translateY(-10px) scale(1.015)}
+.card>*{position:relative;z-index:2}
+.card h3{font-family:'Syne',sans-serif;font-size:1.7rem;letter-spacing:-.02em;margin:18px 0 10px}
+.card p{color:rgba(255,255,255,.7);line-height:1.6;font-weight:300}
+.icon{
+  width:64px;height:64px;border-radius:20px;display:grid;place-items:center;font-size:1.9rem;
+  background:linear-gradient(135deg,var(--gc),var(--gd,var(--c2)));
+  box-shadow:0 10px 40px var(--gc),inset 0 2px 0 rgba(255,255,255,.5);
+}
+.c-a{grid-column:span 4;--gc:var(--c1);--gd:var(--c2)}
+.c-b{grid-column:span 2;--gc:var(--c3);--gd:var(--c4)}
+.c-c{grid-column:span 2;--gc:var(--c5);--gd:var(--c6)}
+.c-d{grid-column:span 2;--gc:var(--c2);--gd:var(--c1)}
+.c-e{grid-column:span 2;--gc:var(--c4);--gd:var(--c3)}
+@media(max-width:900px){.bento>*{grid-column:span 6!important}}
+.bars{display:flex;align-items:flex-end;gap:10px;height:120px;margin-top:26px}
+.bars i{flex:1;border-radius:10px 10px 4px 4px;background:linear-gradient(to top,var(--c2),var(--c1),var(--c5));box-shadow:0 0 25px rgba(255,0,200,.5);animation:grow 2.4s ease-in-out infinite alternate;height:var(--h)}
+@keyframes grow{to{transform:scaleY(.55);filter:hue-rotate(60deg)}}
+.bars i{transform-origin:bottom}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.stat{padding:38px 20px;border-radius:30px;text-align:center}
+.stat b{display:block;font-family:'Syne',sans-serif;font-size:clamp(2.6rem,6vw,4.4rem);letter-spacing:-.04em;line-height:1}
+.stat span{display:block;margin-top:12px;color:rgba(255,255,255,.65);font-size:.9rem;letter-spacing:.08em;text-transform:uppercase}
+
+/* pricing */
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;align-items:center}
+.plan{border-radius:36px;padding:40px 34px;position:relative;overflow:hidden}
+.plan.hot{
+  transform:scale(1.06);
+  background:linear-gradient(160deg,rgba(255,0,200,.35),rgba(122,0,255,.3) 50%,rgba(0,229,255,.28));
+  border:1px solid rgba(255,255,255,.45);
+  box-shadow:0 0 0 1px rgba(255,255,255,.2) inset,0 30px 120px rgba(255,0,200,.5),0 0 200px rgba(0,229,255,.3);
+}
+.plan.hot::after{content:"";position:absolute;inset:-50%;background:conic-gradient(from 0deg,transparent,rgba(255,255,255,.25),transparent 30%);animation:spin 6s linear infinite;pointer-events:none}
+.plan h4{font-family:'Syne',sans-serif;font-size:1.3rem;margin-bottom:6px}
+.price{font-family:'Syne',sans-serif;font-size:3.6rem;font-weight:800;letter-spacing:-.04em;margin:14px 0 6px}
+.price small{font-size:1rem;font-weight:400;color:rgba(255,255,255,.6);font-family:'Space Grotesk'}
+.plan ul{list-style:none;margin:26px 0 32px;display:grid;gap:14px;position:relative;z-index:2}
+.plan li{display:flex;gap:12px;color:rgba(255,255,255,.85);font-weight:300}
+.plan li::before{content:"✦";color:var(--c4);text-shadow:0 0 12px var(--c4)}
+.plan .btn{width:100%;justify-content:center;position:relative;z-index:2}
+.badge{position:absolute;top:18px;right:18px;z-index:3;font-size:.68rem;letter-spacing:.14em;padding:6px 12px;border-radius:999px;background:linear-gradient(90deg,var(--c5),var(--c1));box-shadow:0 0 25px var(--c5);font-weight:700}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.quote{padding:34px;border-radius:28px}
+.quote p{font-size:1.1rem;line-height:1.6;margin-bottom:24px;font-weight:300}
+.who{display:flex;align-items:center;gap:14px}
+.av{width:48px;height:48px;border-radius:50%;background:conic-gradient(var(--c1),var(--c3),var(--c5),var(--c1));box-shadow:0 0 25px var(--c1);animation:spin 8s linear infinite}
+.who b{display:block}.who small{color:rgba(255,255,255,.55)}
+
+/* final cta */
+.finale{
+  border-radius:60px;padding:100px 30px;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(255,0,200,.3),rgba(122,0,255,.25),rgba(0,229,255,.3));
+  border:1px solid rgba(255,255,255,.35);
+  box-shadow:0 0 200px rgba(122,0,255,.5),inset 0 0 120px rgba(255,255,255,.08);
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+}
+.finale::before{content:"";position:absolute;width:800px;height:800px;left:50%;top:50%;translate:-50% -50%;background:conic-gradient(from 0deg,var(--c1),var(--c5),var(--c4),var(--c3),var(--c2),var(--c1));filter:blur(120px);opacity:.35;animation:spin 12s linear infinite;z-index:-1}
+.finale h2{font-size:clamp(2.6rem,8vw,6.5rem);margin-bottom:24px}
+.finale .cta{margin-top:40px}
+
+footer{padding:60px 24px 90px;text-align:center;color:rgba(255,255,255,.45);font-size:.85rem}
+footer .gt{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;display:block;margin-bottom:12px}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(60px) scale(.96);filter:blur(14px);transition:all 1s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none;filter:blur(0)}
+
+/* scroll progress */
+#prog{position:fixed;top:0;left:0;height:4px;width:0;z-index:200;background:linear-gradient(90deg,var(--c1),var(--c5),var(--c4),var(--c3),var(--c2));box-shadow:0 0 20px var(--c1),0 0 40px var(--c3)}
+
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div><div class="blob b5"></div></div>
+<div class="grid"></div>
+<div class="noise"></div>
+<div id="cursor-glow"></div>
+<canvas id="sparkles"></canvas>
+
+<nav class="glass">
+  <div class="logo"><i></i><span class="gt">NEXUSFLUX™</span></div>
+  <div class="links"><a href="#features">Features</a><a href="#stats">Metrics</a><a href="#pricing">Pricing</a><a href="#love">Love</a></div>
+  <a class="btn sm" href="#pricing">Get Started ✦</a>
+</nav>
+
+<header class="hero">
+  <div class="shape orb o1"></div><div class="shape orb o2"></div><div class="shape orb o3"></div><div class="shape orb o4"></div><div class="shape ring"></div>
+  <div class="wrap" style="position:relative;z-index:2">
+    <div class="pill glass rv"><b>NEW</b><span class="dot"></span> Quantum-Synergized AI 4.0 is here</div>
+    <h1 class="rv"><span class="gt">Reimagine</span><span class="l2">the Future of Everything</span></h1>
+    <p class="sub rv">The world's first <em>hyper-converged, AI-native, blockchain-adjacent</em> platform that <em>10x's your synergy</em> while disrupting disruption itself. Gradients included at no extra cost.</p>
+    <div class="cta rv"><a class="btn" href="#features">Start Building ⚡</a><a class="btn ghost" href="#stats">Watch the Demo ▶</a></div>
+  </div>
+</header>
+
+<div class="marquee"><div class="track">
+  <span>SYNERGY</span><span>DISRUPTION</span><span>HYPERSCALE</span><span>AI-NATIVE</span><span>WEB∞</span><span>QUANTUM</span><span>VIBES</span><span>BLUR</span>
+  <span>SYNERGY</span><span>DISRUPTION</span><span>HYPERSCALE</span><span>AI-NATIVE</span><span>WEB∞</span><span>QUANTUM</span><span>VIBES</span><span>BLUR</span>
+</div></div>
+
+<section id="features"><div class="wrap">
+  <span class="eyebrow rv">✦ Features ✦</span>
+  <h2 class="rv">Everything you need.<br><span class="gt">And more gradients.</span></h2>
+  <p class="lead rv">Engineered with 47 layers of backdrop blur so your product feels expensive before it does anything.</p>
+  <div class="bento">
+    <div class="card glass c-a rv"><div class="icon">🧠</div><h3>Neural Mesh Intelligence</h3><p>Our proprietary neural mesh learns your workflow, predicts your needs, then confidently does something unrelated. Powered by vibes and a very large GPU bill.</p>
+      <div class="bars"><i style="--h:40%;animation-delay:0s"></i><i style="--h:75%;animation-delay:.2s"></i><i style="--h:55%;animation-delay:.4s"></i><i style="--h:90%;animation-delay:.6s"></i><i style="--h:65%;animation-delay:.8s"></i><i style="--h:100%;animation-delay:1s"></i><i style="--h:50%;animation-delay:1.2s"></i><i style="--h:80%;animation-delay:1.4s"></i><i style="--h:60%;animation-delay:1.6s"></i><i style="--h:95%;animation-delay:1.8s"></i></div></div>
+    <div class="card glass c-b rv"><div class="icon">⚡</div><h3>Instant Everything</h3><p>Latency so low it's technically negative. Results arrive before you ask.</p></div>
+    <div class="card glass c-c rv"><div class="icon">🔮</div><h3>Predictive Aura</h3><p>Sees your next click, your next quarter, and your next existential crisis.</p></div>
+    <div class="card glass c-d rv"><div class="icon">🌈</div><h3>Infinite Gradients</h3><p>Every pixel is a gradient of a gradient. Flat colors are a thing of the past.</p></div>
+    <div class="card glass c-e rv"><div class="icon">🛡️</div><h3>Military-Grade Glass</h3><p>Frosted to 28px blur. Bulletproof against bad taste and good UX.</p></div>
+  </div>
+</div></section>
+
+<section id="stats"><div class="wrap">
+  <span class="eyebrow rv">✦ Metrics ✦</span>
+  <h2 class="rv">Numbers that <span class="gt">definitely aren't made up</span></h2>
+  <p class="lead rv">Independently verified by us, in a meeting, once.</p>
+  <div class="stats">
+    <div class="stat glass rv"><b class="gt" data-to="9999" data-suf="x">0</b><span>Synergy Multiplier</span></div>
+    <div class="stat glass rv"><b class="gt" data-to="420" data-suf="M+">0</b><span>Blurred Pixels / sec</span></div>
+    <div class="stat glass rv"><b class="gt" data-to="100" data-suf="%">0</b><span>Vibes Delivered</span></div>
+    <div class="stat glass rv"><b class="gt" data-to="47" data-suf="">0</b><span>Layers of Backdrop Blur</span></div>
+  </div>
+</div></section>
+
+<section id="pricing"><div class="wrap">
+  <span class="eyebrow rv">✦ Pricing ✦</span>
+  <h2 class="rv">Pick your <span class="gt">dimension</span></h2>
+  <p class="lead rv">Transparent pricing. Transparent cards. Transparent intentions.</p>
+  <div class="pricing">
+    <div class="plan glass rv"><h4>Spark</h4><div class="price gt">$0<small>/mo</small></div><p style="color:rgba(255,255,255,.6);font-weight:300">For curious dreamers.</p>
+      <ul><li>3 gradients</li><li>Light blur (8px)</li><li>Community glow</li></ul><a class="btn ghost" href="#">Start Free</a></div>
+    <div class="plan hot rv"><span class="badge">MOST HYPED</span><h4>Supernova</h4><div class="price gt">$99<small>/mo</small></div><p style="color:rgba(255,255,255,.75);font-weight:300;position:relative;z-index:2">For teams who ship aesthetics.</p>
+      <ul><li>Unlimited gradients</li><li>Heavy blur (40px)</li><li>Animated conic borders</li><li>Priority sparkle support</li></ul><a class="btn" href="#">Go Supernova ✦</a></div>
+    <div class="plan glass rv"><h4>Cosmos</h4><div class="price gt">∞<small>/mo</small></div><p style="color:rgba(255,255,255,.6);font-weight:300">For those beyond limits.</p>
+      <ul><li>Every effect, always</li><li>Custom reality distortion</li><li>Dedicated shimmer engineer</li></ul><a class="btn ghost" href="#">Contact Universe</a></div>
+  </div>
+</div></section>
+
+<section id="love"><div class="wrap">
+  <span class="eyebrow rv">✦ Love ✦</span>
+  <h2 class="rv">Loved by <span class="gt">people we invented</span></h2>
+  <p class="lead rv">Real testimonials from real-sounding humans.</p>
+  <div class="quotes">
+    <div class="quote glass rv"><p>"I stared at the hero section for 45 minutes. My GPU is crying. 10/10."</p><div class="who"><div class="av"></div><div><b>Aria Vantablack</b><small>Chief Vibes Officer</small></div></div></div>
+    <div class="quote glass rv"><p>"We replaced our entire design system with a single radial gradient. Revenue is up 4%."</p><div class="who"><div class="av" style="animation-direction:reverse"></div><div><b>Kai Holograph</b><small>Head of Disruption</small></div></div></div>
+    <div class="quote glass rv"><p>"It's giving future. It's giving blur. It's giving 'why is my laptop fan so loud'."</p><div class="who"><div class="av"></div><div><b>Luna Prism</b><small>Gradient Evangelist</small></div></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="finale rv">
+    <h2><span class="gt">Ready to blur</span><br>the future?</h2>
+    <p class="sub" style="margin-bottom:0">Join 3 people already living in the gradient.</p>
+    <div class="cta"><a class="btn" href="#">Claim Your Glow ✦</a><a class="btn ghost" href="#">Talk to a Human*</a></div>
+  </div>
+</div></section>
+
+<footer><span class="gt">NEXUSFLUX™</span>© 2026 NexusFlux Labs. All rights reserved, all gradients too.<br>*Humans may be gradients.</footer>
+
+<script>
+/* scroll progress */
+const prog=document.getElementById('prog');
+addEventListener('scroll',()=>{const h=document.documentElement;prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+
+/* reveal on scroll + counters */
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){
+    e.target.classList.add('in');
+    e.target.querySelectorAll('[data-to]').forEach(count);
+    if(e.target.dataset&&e.target.dataset.to)count(e.target);
+    io.unobserve(e.target);
+  }
+}),{threshold:.15});
+document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%4)*90+'ms';io.observe(el)});
+function count(el){
+  if(el.done)return;el.done=1;
+  const to=+el.dataset.to,suf=el.dataset.suf||'',t0=performance.now(),d=2200;
+  (function f(t){const p=Math.min((t-t0)/d,1),e=1-Math.pow(1-p,4);el.textContent=Math.round(to*e).toLocaleString()+suf;if(p<1)requestAnimationFrame(f)})(t0);
+}
+
+/* cursor glow + card spotlight + tilt */
+const glow=document.getElementById('cursor-glow');
+addEventListener('pointermove',e=>{glow.style.left=e.clientX+'px';glow.style.top=e.clientY+'px'});
+document.querySelectorAll('.card').forEach(c=>{
+  c.addEventListener('pointermove',e=>{
+    const r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+    c.style.setProperty('--mx',x+'px');c.style.setProperty('--my',y+'px');
+    const rx=((y/r.height)-.5)*-8,ry=((x/r.width)-.5)*8;
+    c.style.transform=`perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-10px) scale(1.015)`;
+  });
+  c.addEventListener('pointerleave',()=>c.style.transform='');
+});
+
+/* sparkle canvas */
+const cv=document.getElementById('sparkles'),cx=cv.getContext('2d');
+let W,H,P=[];
+function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight}rs();addEventListener('resize',rs);
+const cols=['#ff00c8','#00e5ff','#00ff9d','#ffb300','#ffffff','#7a00ff'];
+for(let i=0;i<90;i++)P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2.2+.4,s:Math.random()*.5+.1,c:cols[i%cols.length],t:Math.random()*6.28});
+function draw(){
+  cx.clearRect(0,0,W,H);
+  for(const p of P){
+    p.y-=p.s;p.t+=.03;if(p.y<-10){p.y=H+10;p.x=Math.random()*W}
+    const a=.4+Math.sin(p.t)*.5;
+    cx.globalAlpha=Math.max(a,0);cx.fillStyle=p.c;cx.shadowColor=p.c;cx.shadowBlur=14;
+    cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);cx.fill();
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+addEventListener('pointerdown',e=>{
+  for(let i=0;i<14;i++)P.push({x:e.clientX,y:e.clientY,r:Math.random()*3+1,s:Math.random()*1.5+.3,c:cols[i%cols.length],t:0});
+  if(P.length>260)P.splice(0,P.length-260);
+});
+</script>
+</body>
+</html>
